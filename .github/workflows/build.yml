@@ -75,7 +75,7 @@ jobs:
         run: |
           $src_url = 'https://github.com/package-automake/libuv/releases/download/v1.44.1/libuv-v1.44.1-${{matrix.build_type}}-${{matrix.arch}}-Windows.zip'
           (new-object System.Net.WebClient).DownloadFile($src_url, 'libuv.zip')
-           .\7z x libuv.zip -olibuv
+          7z x libuv.zip -olibuv
           
       - name: Download uSockets
         shell: bash
