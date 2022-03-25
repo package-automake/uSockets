@@ -141,7 +141,7 @@ jobs:
           mkdir build
           cd build
           lib_dir="$(pwd)/libuv/lib/cmake/libuv"
-          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_INSTALL_PREFIX=install -D libuv_DIR=$libuv_dir ../uSockets/src
+          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_INSTALL_PREFIX=install -D libuv_DIR=$(libuv_dir) ../uSockets/src
           make && make install
       
       - name: Compress Package on Ubuntu
