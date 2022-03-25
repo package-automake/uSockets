@@ -136,9 +136,11 @@ jobs:
           wget 'https://github.com/package-automake/libuv/releases/download/v1.44.1/libuv-v1.44.1-${{matrix.build_type}}-${{matrix.arch}}-Linux.zip' -O libuv.zip
           unzip ./libuv.zip -d ./libuv
           libuv_dir="$(pwd)/libuv/lib/cmake/libuv"
+          ls
+          ls $libuv_dir
           echo "libuv_dir: $libuv_dir"
           mkdir build && cd build
-          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_INSTALL_PREFIX=./install -D libuv_DIR=$(libuv_dir) ../uSockets/src
+          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_INSTALL_PREFIX=./install -D libuv_DIR=$libuv_dir ../uSockets/src
           make && make install
       
       - name: Compress Package on Ubuntu
