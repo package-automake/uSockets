@@ -123,7 +123,7 @@ jobs:
 
       - name: Download libuv
         run: |
-          wget 'https://github.com/package-automake/libuv/releases/download/v1.44.1/libuv-v1.44.1-${{matrix.build_type}}-${{matrix.arch}}-Linux.zip'
+          wget 'https://github.com/package-automake/libuv/releases/download/v1.44.1/libuv-v1.44.1-${{matrix.build_type}}-${{matrix.arch}}-Linux.zip' -O libuv.zip
           unzip ./libuv.zip -d ./libuv
       
       - name: Download uSockets
