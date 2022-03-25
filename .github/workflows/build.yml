@@ -107,3 +107,56 @@ jobs:
           asset_path: uSockets-${{ github.event.inputs.tag }}.zip
           asset_name: uSockets-${{ github.event.inputs.tag }}-${{matrix.build_type}}-${{matrix.arch}}-${{runner.os}}.zip
           asset_content_type: application/zip
+  
+  linux-build:
+    needs: init
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        build_type: ["Debug", "Release"]
+        arch: ["x64"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Download libuv
+        run: |
+          wget 'https://github.com/package-automake/libuv/releases/download/v1.44.1/libuv-v1.44.1-${{matrix.build_type}}-${{matrix.arch}}-Linux.zip'
+          unzip ./libuv.zip -d ./libuv
+      
+      - name: Download uSockets
+        shell: bash
+        run: |
+          git clone https://github.com/uNetworking/uSockets.git
+          cd uSockets
+          git checkout ${{ github.event.inputs.tag }}
+          cd ..
+          mv ./CMakeLists.txt ./uSockets/src/CMakeLists.txt
+      
+      - name: Build uSockets on Linux
+        shell: bash
+        run: |
+          mkdir build
+          cd build
+          lib_dir="$(pwd)/libuv/lib/cmake/libuv"
+          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_INSTALL_PREFIX=install -D libuv_DIR=$libuv_dir ../uSockets/src
+          make && make install
+      
+      - name: Compress Package on Ubuntu
+        run: |
+          cd ./build/install
+          zip -r uSockets-${{ github.event.inputs.tag }}.zip ./*
+          mv uSockets-${{ github.event.inputs.tag }}.zip ../../libuv-${{ github.event.inputs.tag }}.zip
+      
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.init.outputs.output1 }}
+          asset_path: uSockets-${{ github.event.inputs.tag }}.zip
+          asset_name: uSockets-${{ github.event.inputs.tag }}-${{matrix.build_type}}-${{matrix.arch}}-${{runner.os}}.zip
+          asset_content_type: application/zip
